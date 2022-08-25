@@ -1,58 +1,62 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React from 'react'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import Dashboard from './components/dashboard/dashboard'
+import SignIn from './components/signIn/signIn'
+import SignUp from './components/signUp/signUp'
+import Forgot from './components/forgotPassword/forgotPassword'
+import PrivateRoute from './components/auth/private'
+import useUser from './redux/selector/useUser'
+import Loader from './components/ui/loader'
+import styled from 'styled-components'
 
-function App() {
+
+const Header = styled.header`
+  height: 7rem;
+  width: 100%;
+  background-color: #E0EFEA;
+  color: #b77d5c;
+  font-weight: bold;
+  font-size: 24px;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
+const App:React.FC = () => {
+
+
+  const { userState } = useUser()
+  const { loading  } = userState
+
+ 
+  if(loading) {
+    return <Loader />
+  }
+
+  const { authenticated } = userState
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
-  );
+    <>
+      <Router>
+        <React.Fragment>
+          <Header>
+            <h4>react-ts-rtk-firebase-authentication</h4>
+          </Header>
+          <Routes>
+            <Route path='/' element={<SignIn />} />
+            <Route path='/signup' element={<SignUp />} />
+            <Route path='/forgot-password' element={<Forgot />} />
+            <Route path='/dashboard' element={
+              <PrivateRoute auth={authenticated}>
+                <Dashboard/>
+              </PrivateRoute>
+            } />
+          </Routes> 
+        </React.Fragment>
+      </Router>
+    </>
+  )
 }
 
-export default App;
+export default App
